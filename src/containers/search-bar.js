@@ -3,6 +3,8 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { getCountries } from "../actions/index";
 
+//Test for GitHUb
+
 class SearchBar extends Component {
 
   constructor(props) {
