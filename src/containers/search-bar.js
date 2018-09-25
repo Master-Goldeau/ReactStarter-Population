@@ -3,13 +3,17 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { getCountries } from "../actions/index";
 
-//Test for GitHUb
-
 class SearchBar extends Component {
 
   constructor(props) {
     super(props)
-    this.state = { selectedCountry: this.props.defaultCountry, searchCountry: "", placeHolder: "Search a Country" }
+    this.state = {
+      selectedCountry: this.props.defaultCountry,
+      searchCountry: "",
+      placeHolder: "Search a Country",
+      intervalBeforeRequest: 1000,
+      lockRequest: false
+    }
   }
   componentWillMount() {
     this.props.getCountries();
@@ -24,11 +28,11 @@ class SearchBar extends Component {
             // value={this.state.selectedCountry}
             onChange={(event) => this.handleChange(event)}
             placeholder={this.state.placeHolder}
-            className="col-lg-12 input-group"
-          >
-          </input>
-          <span className="input-group-btn">
-            <button className="btn btn-secondary" onClick={(event)=> this.handleOnClick(event)}>Search
+            className="col-sm-4 input-group"
+          ></input>
+          <span className="col-sm-2 input-group-btn">
+            <button className="btn btn-secondary"
+                    onClick={(event)=> this.handleOnClick(event)}>Search
             </button>
           </span>
         </div>
@@ -38,24 +42,28 @@ class SearchBar extends Component {
     }
   }
 
-  handleOnClick(event){
-   this.props.callback(this.state.searchCountry)
-
-  }
-
-  handleChange(event) {
-    console.log('---')
-    console.log('-UNE SAISIE-', event.target.value)
-    console.log('---')
+  handleChange(event) {   
     this.setState({ searchCountry: event.target.value })
+    if(!this.state.lockRequest){
+      this.setState({lockRequest: true})
+      setTimeout(function(){this.search()}.bind(this), this.state.intervalBeforeRequest)
+    }
   }
+
+  handleOnClick(event){
+    this.props.callback(this.state.searchCountry)
+    this.search(event)  
+  }
+
+  search(e)
+  {
+    // this.props.callback(this.state.searchCountry)    
+    this.setState({lockRequest: false})
+    this.setState({ selectedCountry: e.target.value },()=>{
+    this.props.getMortality(this.state.selectedCountry)
+    });
+  } 
   
-
-  search(e) {
-    this.setState({ selectedCountry: e.target.value })
-
-    //todo
-  }
 
   render() {
     return (
